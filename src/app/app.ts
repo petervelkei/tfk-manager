@@ -3,9 +3,10 @@ import { TestPlan } from './test-plan/test-plan';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [TestPlan],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss']
 })
 export class App {
   protected readonly title = signal('tfk-manager');
