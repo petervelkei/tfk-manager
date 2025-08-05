@@ -171,7 +171,6 @@ export class TestPlan implements OnInit {
         };
       }
 
-      row.height = 28;
       row.commit();
       rowIdx++;
       return;
@@ -195,7 +194,6 @@ export class TestPlan implements OnInit {
         c.border = thinBorder;
       });
 
-      row.height = 25;
       row.commit();
       rowIdx++;
     });
