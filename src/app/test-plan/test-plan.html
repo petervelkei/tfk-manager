@@ -1,41 +1,39 @@
 <div class="container">
-  <h2>Tesztforgatókönyv írása</h2>
+  <h2>TFK</h2>
 
   <form [formGroup]="testPlanForm">
     <div class="form-group">
-      <label>Teszt terv címe:</label>
-      <input formControlName="title" type="text" placeholder="Pl.: Belépési folyamat teszt" />
+      <label>Teszt neve</label>
+      <input formControlName="title" type="text" placeholder="Pl.: Belépési folyamat" />
     </div>
 
     <div formArrayName="steps">
       <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i" class="step-card">
-        <h3 class="step-header">Lépés {{ i + 1 }}</h3>
+        <h3 class="step-header">{{ i + 1 }}. lépés</h3>
 
-		<div class="grid-cols-2">
-          <div class="form-group">
-            <label>Funkció</label>
-            <input formControlName="function" type="text" />
-          </div>
-          <div class="form-group">
-            <label>Előfeltétel</label>
-            <input formControlName="precondition" type="text" />
-          </div>
+        <div class="grid-cols-2">
+            <div class="form-group">
+              <label>Funkció</label>
+              <input formControlName="function" type="text" />
+            </div>
+            <div class="form-group">
+              <label>Előfeltétel</label>
+              <input formControlName="precondition" type="text" />
+            </div>
         </div>
 
-
-		<div class="form-group">
-		<label>Feladat/Tesztlépések</label>
-		<textarea formControlName="stepsText" rows="6" placeholder="Írd le a lépéseket, listázva"></textarea>
-		</div>
-		<div class="form-group">
-		<label>Tesztadatok</label>
-		<textarea formControlName="testData" rows="6" placeholder="Írd le a tesztadatokat"></textarea>
-		</div>
-		<div class="form-group">
-		<label>Elvárt eredmény</label>
-		<textarea formControlName="expected" rows="6" placeholder="Írd le az elvárt kimenetet"></textarea>
-		</div>
-
+        <div class="form-group">
+          <label>Feladat/Tesztlépések</label>
+          <textarea formControlName="stepsText" rows="6" placeholder="Írd le a lépéseket, listázva"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Tesztadatok</label>
+          <textarea formControlName="testData" rows="6" placeholder="Írd le a tesztadatokat"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Elvárt eredmény</label>
+          <textarea formControlName="expected" rows="6" placeholder="Írd le az elvárt kimenetet"></textarea>
+        </div>
 
         <button type="button" class="remove-step" (click)="removeStep(i)" [disabled]="steps.length === 1">Sor törlése</button>
       </div>
