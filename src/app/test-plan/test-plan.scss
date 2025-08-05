@@ -81,13 +81,6 @@ input[type="text"] {
   font-weight: 700;
 }
 
-.grid-cols-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: $spacing;
-  margin-bottom: $spacing;
-}
-
 .actions {
   display: flex;
   flex-wrap: wrap;

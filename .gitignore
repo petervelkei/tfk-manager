@@ -1,17 +1,41 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files
 
+############################
 # Compiled output
+############################
 /dist
 /tmp
 /out-tsc
 /bazel-out
 
+############################
 # Node
+############################
 /node_modules
-npm-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+/.pnpm-store
+/.npm
+/.cache
 
+############################
+# Angular
+############################
+/.angular/cache
+/coverage
+
+############################
+# Package managers / lock & artifacts
+############################
+# (A lock fájlokat általában verziózzuk; ha mégsem, vedd ki a # jelet.)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+############################
 # IDEs and editors
+############################
 .idea/
 .project
 .classpath
@@ -28,15 +52,53 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
+# Editor temp files
+*.swp
+*.swo
+*~
+*.tmp
+
+############################
+# Lint/TS cache
+############################
+.eslintcache
+*.tsbuildinfo
+
+############################
 # Miscellaneous
-/.angular/cache
+############################
 .sass-cache/
 /connect.lock
-/coverage
 /libpeerconnection.log
 testem.log
 /typings
 
-# System files
+############################
+# Logs / PIDs
+############################
+logs
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+############################
+# Env / secrets (ha használsz ilyet)
+############################
+.env
+.env.*
+!.env.example
+
+############################
+# System files (macOS / Windows)
+############################
 .DS_Store
+.DS_STORE
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
+ehthumbs.db
