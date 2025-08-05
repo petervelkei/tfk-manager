@@ -34,7 +34,9 @@ export class TestPlan implements OnInit {
 
   createStep(): FormGroup {
     return this.fb.group({
-      function:     ['', Validators.required],
+      isSubtest:    [false],
+      subtestName:  [''],
+      function:     [''],
       precondition: [''],
       testData:     [''],
       stepsText:    [''],
@@ -146,6 +148,29 @@ export class TestPlan implements OnInit {
       const v = grp.value || {};
       const row = ws.getRow(rowIdx);
 
+      if (v.isSubtest) {
+        ws.mergeCells(rowIdx, 1, rowIdx, 7);
+        const c = row.getCell(1);
+        c.value = String(v.subtestName || '');
+        c.font = { name: 'Calibri', size: 11, bold: true };
+        c.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
+
+        for (let col = 1; col <= 7; col++) {
+          row.getCell(col).border = {
+            top:    { style: 'thin' },
+            left:   { style: 'thin' },
+            bottom: { style: 'thin' },
+            right:  { style: 'thin' }
+          };
+        }
+
+        row.height = 28;
+        row.commit();
+        rowIdx++;
+        return;
+      }
+
       const vals = [
         v.function || '',
         v.precondition || '',
@@ -223,14 +248,21 @@ export class TestPlan implements OnInit {
     if (!sheet) return;
 
     const aoa: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true });
+    const merges: Array<{ s: { r: number, c: number }, e: { r: number, c: number } }> =
+      (sheet as any)['!merges'] || [];
+
     const startIdx = Math.max(1, this.startRow) - 1;
 
     while (this.steps.length) this.steps.removeAt(0);
 
     for (let r = startIdx; r < aoa.length; r++) {
       const row = aoa[r] || [];
-      if (!this.isRowEmpty(row)) {
-        this.steps.push(this.createStepFromRow(row));
+      if (this.isMergedSubtestRow(r, merges)) {
+        this.addSubtestStep(row);
+        continue;
+      }
+      if (this.isNormalStepRow(row)) {
+        this.addNormalStep(row);
       }
     }
 
@@ -239,21 +271,47 @@ export class TestPlan implements OnInit {
     }
   }
 
-  private isRowEmpty(row: any[]): boolean {
-    const [A, B, C, D, E] = row;
-    return [A, B, C, D, E].every(v => v == null || String(v).trim() === '');
+  private isMergedSubtestRow(zeroBasedRow: number, merges: Array<{ s: { r: number, c: number }, e: { r: number, c: number } }>): boolean {
+    return merges.some(m =>
+      m.s.r === zeroBasedRow &&
+      m.e.r === zeroBasedRow &&
+      m.s.c === 0 &&
+      m.e.c === 6
+    );
   }
 
-  private createStepFromRow(row: any[]): FormGroup {
+  private isNormalStepRow(row: any[]): boolean {
+    const [A, B, C, D, E] = row;
+    return ![A, B, C, D, E].every(v => v == null || String(v).trim() === '');
+  }
+
+  private addSubtestStep(row: any[]): void {
+    const name = row[0] != null ? String(row[0]) : '';
+    const fg = this.createStep();
+    fg.patchValue({
+      isSubtest:   true,
+      subtestName: name,
+      function:     '',
+      precondition: '',
+      stepsText:    '',
+      testData:     '',
+      expected:     ''
+    });
+    this.steps.push(fg);
+  }
+
+  private addNormalStep(row: any[]): void {
     const [A, B, C, D, E] = row;
     const fg = this.createStep();
     fg.patchValue({
+      isSubtest:   false,
+      subtestName: '',
       function:     A != null ? String(A) : '',
       precondition: B != null ? String(B) : '',
       stepsText:    C != null ? String(C).replace(/\r\n/g, '\n') : '',
       testData:     D != null ? String(D).replace(/\r\n/g, '\n') : '',
-      expected:     E != null ? String(E).replace(/\r\n/g, '\n') : '',
+      expected:     E != null ? String(E).replace(/\r\n/g, '\n') : ''
     });
-    return fg;
+    this.steps.push(fg);
   }
 }
