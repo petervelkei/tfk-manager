@@ -147,6 +147,123 @@ textarea {
 }
 
 
+.import-card {
+  background: $accent-color;
+  border-radius: $border-radius;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0,0,0,0.06);
+  overflow: hidden;
+  margin: $spacing * 1.5 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $spacing;
+    padding: $spacing * 1.25 $spacing * 1.5;
+    background: linear-gradient(135deg, rgba(75,108,183,0.08), rgba(24,40,72,0.06));
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  &__icon {
+    font-size: 1.75rem;
+    line-height: 1;
+    width: 44px; height: 44px;
+    display: grid; place-items: center;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    color: $primary-color;
+  }
+
+  &__title {
+    margin: 0;
+    color: $secondary-color;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  &__subtitle {
+    margin: 2px 0 0 0;
+    color: darken($text-color, 10%);
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  &__body {
+    padding: $spacing * 1.5;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: $spacing $spacing * 1.5 $spacing * 1.25;
+    background: rgba(0,0,0,0.02);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    gap: $spacing;
+  }
+}
+
+.import-card .form-group {
+  margin-bottom: $spacing;
+}
+
+.import-card label {
+  display: inline-block;
+  font-weight: 600;
+  margin-bottom: $spacing / 4;
+  color: $text-color;
+}
+
+.import-card input[type="file"],
+.import-card input[type="number"],
+.import-card select {
+  width: 100%;
+  padding: $spacing / 1.4;
+  border: 1px solid lighten($text-color, 50%);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(75,108,183,0.18);
+  }
+}
+
+.import-card input[type="file"] {
+  padding: $spacing / 2;
+}
+
+.import-card .hint {
+  display: block;
+  font-size: 0.85rem;
+  color: darken($text-color, 15%);
+  opacity: 0.8;
+  margin-top: 6px;
+}
+
+.form-row.grid-cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing;
+}
+
+.import-card__footer .add-step {
+  min-width: 140px;
+}
+
+@media (max-width: 720px) {
+  .form-row.grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  .import-card__footer {
+    justify-content: center;
+  }
+}
+
+
 @media (max-width: 600px) {
   :host {
     padding: $spacing;
