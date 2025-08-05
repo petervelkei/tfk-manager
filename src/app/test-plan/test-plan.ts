@@ -36,6 +36,7 @@ export class TestPlan implements OnInit {
     return this.fb.group({
       isSubtest:    [false],
       subtestName:  [''],
+      subtestColor: ['#929292'],
       function:     [''],
       precondition: [''],
       testData:     [''],
@@ -48,8 +49,9 @@ export class TestPlan implements OnInit {
     return this.testPlanForm.get('steps') as FormArray;
   }
 
-  addStep(): void {
-    this.steps.push(this.createStep());
+  addStep(afterIndex?: number): void {
+    const insertAt = ((afterIndex ?? (this.steps.length - 1)) + 1);
+    this.steps.insert(insertAt, this.createStep());
   }
 
   removeStep(index: number): void {
@@ -145,31 +147,35 @@ export class TestPlan implements OnInit {
 
     let rowIdx = headerRowIndex + 1;
     this.steps.controls.forEach(grp => {
-      const v = grp.value || {};
-      const row = ws.getRow(rowIdx);
+    const v = grp.value || {};
+    const row = ws.getRow(rowIdx);
 
-      if (v.isSubtest) {
-        ws.mergeCells(rowIdx, 1, rowIdx, 7);
-        const c = row.getCell(1);
-        c.value = String(v.subtestName || '');
-        c.font = { name: 'Calibri', size: 11, bold: true };
-        c.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
+    if (v.isSubtest) {
+      ws.mergeCells(rowIdx, 1, rowIdx, 7);
+      const c = row.getCell(1);
+      const hex = (v.subtestColor || '#555555').toString();
+      const bg  = this.hexToARGB(hex);
+      const fontColor = this.isDark(hex) ? 'FFFFFFFF' : 'FF000000'; // fehér betű sötét háttérre
 
-        for (let col = 1; col <= 7; col++) {
-          row.getCell(col).border = {
-            top:    { style: 'thin' },
-            left:   { style: 'thin' },
-            bottom: { style: 'thin' },
-            right:  { style: 'thin' }
-          };
-        }
+      c.value = String(v.subtestName || '');
+      c.font = { name: 'Calibri', size: 11, bold: true, color: { argb: fontColor } };
+      c.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
 
-        row.height = 28;
-        row.commit();
-        rowIdx++;
-        return;
+      for (let col = 1; col <= 7; col++) {
+        row.getCell(col).border = {
+          top:    { style: 'thin' },
+          left:   { style: 'thin' },
+          bottom: { style: 'thin' },
+          right:  { style: 'thin' }
+        };
       }
+
+      row.height = 28;
+      row.commit();
+      rowIdx++;
+      return;
+    }
 
       const vals = [
         v.function || '',
@@ -205,6 +211,20 @@ export class TestPlan implements OnInit {
       });
       saveAs(blob, `${this.testPlanForm.value.title || 'testplan'}.xlsx`);
     });
+  }
+
+  private hexToARGB(hex: string): string {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+    if (!m) return 'FF555555';
+    return ('FF' + m[1] + m[2] + m[3]).toUpperCase();
+  }
+
+  private isDark(hex: string): boolean {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+    if (!m) return true;
+    const r = parseInt(m[1], 16), g = parseInt(m[2], 16), b = parseInt(m[3], 16);
+    const yiq = (r*299 + g*587 + b*114) / 1000;
+    return yiq < 140;
   }
 
 
@@ -291,6 +311,7 @@ export class TestPlan implements OnInit {
     fg.patchValue({
       isSubtest:   true,
       subtestName: name,
+      subtestColor: '#929292',
       function:     '',
       precondition: '',
       stepsText:    '',

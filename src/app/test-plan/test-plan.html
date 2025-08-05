@@ -65,19 +65,25 @@
 
         <div class="form-group" *ngIf="step.get('isSubtest')?.value; else normalRow">
           <label>Alteszt neve</label>
-          <input formControlName="subtestName" type="text" placeholder="Pl.: Közgyógyellátás szerkesztés - alteszt blokk" />
+          <input formControlName="subtestName" type="text"
+                placeholder="Pl.: Közgyógyellátás szerkesztés - alteszt blokk" />
+
+          <div class="form-group" style="margin-top: 12px;">
+            <label>Alteszt háttérszíne</label>
+            <input formControlName="subtestColor" type="color" style="width: 56px; height: 32px; padding: 0; border: none;" />
+            <small class="hint" style="margin-left:8px;">Default: gray (#929292)</small>
+          </div>
         </div>
 
         <ng-template #normalRow>
-          <div class="grid-cols-2">
-            <div class="form-group">
-              <label>Funkció</label>
-              <input formControlName="function" type="text" />
-            </div>
-            <div class="form-group">
-              <label>Előfeltétel</label>
-              <input formControlName="precondition" type="text" />
-            </div>
+          <div class="form-group">
+            <label>Funkció</label>
+            <input formControlName="function" type="text" />
+          </div>
+
+          <div class="form-group">
+            <label>Előfeltétel</label>
+            <textarea formControlName="precondition" rows="6" placeholder="Írd le az előfeltételeket"></textarea>
           </div>
 
           <div class="form-group">
@@ -94,12 +100,14 @@
           </div>
         </ng-template>
 
-        <button type="button" class="remove-step" (click)="removeStep(i)" [disabled]="steps.length === 1">Sor törlése</button>
+        <div class="actions">
+          <button type="button" class="add-step" (click)="addStep(i)">Új lépés hozzáadása</button>
+          <button type="button" class="remove-step" (click)="removeStep(i)" [disabled]="steps.length === 1">Sor törlése</button>
+        </div>
       </div>
     </div>
 
     <div class="actions">
-      <button type="button" class="add-step" (click)="addStep()">Új lépés hozzáadása</button>
       <button type="button" class="add-step" (click)="exportExcel()">Export Excel</button>
     </div>
   </form>
