@@ -23,25 +23,25 @@
           <small class="hint">Elfogadott formátum: .xlsx, .xls</small>
         </div>
 
-        <div class="form-row grid-cols-2" *ngIf="sheetNames.length > 0">
-          <div class="form-group">
-            <label>Munkalap kiválasztása</label>
-            <select [(ngModel)]="selectedSheetName"
-                    [ngModelOptions]="{standalone: true}">
-              <option *ngFor="let n of sheetNames" [value]="n">{{ n }}</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Olvasás kezdete (sorszám)</label>
-            <input type="number"
-                  [ngModel]="startRow"
-                  (ngModelChange)="startRow = $event"
-                  [ngModelOptions]="{standalone: true}"
-                  min="1" />
-            <small class="hint">Default: 19</small>
-          </div>
+        <div class="form-group" *ngIf="sheetNames.length > 0">
+          <label>Munkalap kiválasztása</label>
+          <select [(ngModel)]="selectedSheetName" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let n of sheetNames" [value]="n">{{ n }}</option>
+          </select>
         </div>
+
+        <div class="form-group" *ngIf="sheetNames.length > 0">
+          <label>Olvasás kezdete (sorszám)</label>
+          <input type="number" [ngModel]="startRow" (ngModelChange)="startRow = $event" [ngModelOptions]="{standalone: true}" min="1" />
+          <small class="hint">Default: 19</small>
+        </div>
+
+        <div class="form-group" *ngIf="sheetNames.length > 0">
+          <label>Olvasás vége (sorszám)</label>
+          <input type="number" [ngModel]="endRow" (ngModelChange)="endRow = $event" [ngModelOptions]="{standalone: true}" min="1" />
+          <small class="hint">Ha üres, a munkalap végéig olvas.</small>
+        </div>
+
       </div>
 
       <div class="import-card__footer" *ngIf="sheetNames.length > 0">
@@ -97,6 +97,10 @@
           <div class="form-group">
             <label>Elvárt eredmény</label>
             <textarea formControlName="expected" rows="6" placeholder="Írd le az elvárt kimenetet"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Megjegyzés</label>
+            <textarea formControlName="comment" rows="6" placeholder="Írd le a megjegyzéseket"></textarea>
           </div>
         </ng-template>
 

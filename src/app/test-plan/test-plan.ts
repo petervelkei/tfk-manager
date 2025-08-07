@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule, FormBuilder, FormsModule,
@@ -22,8 +22,13 @@ export class TestPlan implements OnInit {
   sheetNames: string[] = [];
   selectedSheetName: string | null = null;
   startRow = 19;
+  endRow: number | null = null;
 
-  constructor(private readonly fb: FormBuilder) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly ngZone: NgZone,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.testPlanForm = this.fb.group({
@@ -41,7 +46,8 @@ export class TestPlan implements OnInit {
       precondition: [''],
       testData:     [''],
       stepsText:    [''],
-      expected:     ['']
+      expected:     [''],
+      comment:      ['']
     });
   }
 
@@ -155,7 +161,7 @@ export class TestPlan implements OnInit {
       const c = row.getCell(1);
       const hex = (v.subtestColor || '#555555').toString();
       const bg  = this.hexToARGB(hex);
-      const fontColor = this.isDark(hex) ? 'FFFFFFFF' : 'FF000000'; // fehér betű sötét háttérre
+      const fontColor = this.isDark(hex) ? 'FFFFFFFF' : 'FF000000';
 
       c.value = String(v.subtestName || '');
       c.font = { name: 'Calibri', size: 11, bold: true, color: { argb: fontColor } };
@@ -183,7 +189,7 @@ export class TestPlan implements OnInit {
         String(v.testData  || '').replace(/\r\n/g, '\n'),
         String(v.expected  || '').replace(/\r\n/g, '\n'),
         '',
-        ''
+        String(v.comment || '').replace(/\r\n/g, '\n')
       ];
 
       vals.forEach((val, ci) => {
@@ -228,32 +234,37 @@ export class TestPlan implements OnInit {
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const file  = input.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = () => {
       try {
         const data = new Uint8Array(reader.result as ArrayBuffer);
-        this.workbook = XLSX.read(data, { type: 'array' });
+        this.ngZone.run(() => {
+          this.workbook   = XLSX.read(data, { type: 'array' });
 
-        this.sheetNames = this.workbook.SheetNames.slice();
-        this.selectedSheetName = this.sheetNames[0] || null;
+          this.sheetNames = [...this.workbook.SheetNames];
+          this.selectedSheetName = this.sheetNames[0] ?? null;
 
-        if (this.selectedSheetName) {
-          this.importFromSelectedSheet();
-        }
+          if (this.sheetNames.length === 1) {
+            this.importFromSelectedSheet();
+          }
+
+          this.cdr.detectChanges();
+        });
+
       } catch (e) {
         console.error('Excel olvasási hiba:', e);
       } finally {
         input.value = '';
       }
     };
-    reader.onerror = (err) => {
-      console.error('FileReader hiba:', err);
-    };
+
+    reader.onerror = err => console.error('FileReader hiba:', err);
     reader.readAsArrayBuffer(file);
   }
+  
 
   onSheetSelected(): void {
     this.importFromSelectedSheet();
@@ -270,10 +281,11 @@ export class TestPlan implements OnInit {
       (sheet as any)['!merges'] || [];
 
     const startIdx = Math.max(1, this.startRow) - 1;
+    const endIdx   = this.endRow != null && this.endRow >= this.startRow ? this.endRow - 1 : aoa.length - 1;
 
     while (this.steps.length) this.steps.removeAt(0);
 
-    for (let r = startIdx; r < aoa.length; r++) {
+    for (let r = startIdx; r <= endIdx && r < aoa.length; r++) {
       const row = aoa[r] || [];
       if (this.isMergedSubtestRow(r, merges)) {
         this.addSubtestStep(row);
@@ -299,8 +311,8 @@ export class TestPlan implements OnInit {
   }
 
   private isNormalStepRow(row: any[]): boolean {
-    const [A, B, C, D, E] = row;
-    return ![A, B, C, D, E].every(v => v == null || String(v).trim() === '');
+    const [A,B,C,D,E, ,G] = row;
+    return ![A,B,C,D,E,G].every(v => v == null || String(v).trim() === '');
   }
 
   private addSubtestStep(row: any[]): void {
@@ -320,7 +332,7 @@ export class TestPlan implements OnInit {
   }
 
   private addNormalStep(row: any[]): void {
-    const [A, B, C, D, E] = row;
+    const [A,B,C,D,E, ,G] = row;
     const fg = this.createStep();
     fg.patchValue({
       isSubtest:   false,
@@ -329,7 +341,8 @@ export class TestPlan implements OnInit {
       precondition: B != null ? String(B) : '',
       stepsText:    C != null ? String(C).replace(/\r\n/g, '\n') : '',
       testData:     D != null ? String(D).replace(/\r\n/g, '\n') : '',
-      expected:     E != null ? String(E).replace(/\r\n/g, '\n') : ''
+      expected:     E != null ? String(E).replace(/\r\n/g, '\n') : '',
+      comment:      G != null ? String(G).replace(/\r\n/g, '\n') : ''
     });
     this.steps.push(fg);
   }

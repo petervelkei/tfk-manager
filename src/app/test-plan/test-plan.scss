@@ -40,9 +40,15 @@ h3 {
 }
 
 .form-group {
-  margin-bottom: $spacing * 1.2;
-  display: flex;
-  flex-direction: column;
+  input,
+  select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+input[type="number"] {
+  max-width: 250px;
 }
 
 label {
