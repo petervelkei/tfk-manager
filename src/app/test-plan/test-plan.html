@@ -7,7 +7,7 @@
     <nav class="sidebar" [class.open]="isSidebarOpen">
       <ul>
         <li *ngFor="let s of steps.controls; let i = index; trackBy: trackByIndex"
-            [class.active]="i === selection.values().next().value">
+            [class.active]="selection.has(i)">
           <button type="button" (click)="scrollToStep(i)">
             {{ i + 1 }}. lépés
           </button>
