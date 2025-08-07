@@ -1,9 +1,6 @@
 import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule, FormBuilder, FormsModule,
-  FormGroup, FormArray, Validators
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormsModule, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Workbook, Alignment, Borders } from 'exceljs';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -17,12 +14,12 @@ import * as XLSX from 'xlsx';
 })
 export class TestPlan implements OnInit {
   testPlanForm!: FormGroup;
-
   workbook?: XLSX.WorkBook;
   sheetNames: string[] = [];
   selectedSheetName: string | null = null;
   startRow = 19;
   endRow: number | null = null;
+  isSidebarOpen = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -61,11 +58,22 @@ export class TestPlan implements OnInit {
   }
 
   removeStep(index: number): void {
+    if (this.selection.size) {
+      [...this.selection]
+        .sort((a, b) => b - a)
+        .forEach(i => {
+          if (this.steps.length > 1) {
+            this.steps.removeAt(i);
+          }
+        });
+      this.selection.clear();
+      return;
+    }
+
     if (this.steps.length > 1) {
       this.steps.removeAt(index);
     }
   }
-
 
   exportExcel(): void {
     const wb = new Workbook();
@@ -265,7 +273,6 @@ export class TestPlan implements OnInit {
     reader.readAsArrayBuffer(file);
   }
   
-
   onSheetSelected(): void {
     this.importFromSelectedSheet();
   }
@@ -346,4 +353,48 @@ export class TestPlan implements OnInit {
     });
     this.steps.push(fg);
   }
+
+
+  clipboard: any[] = [];
+  readonly selection = new Set<number>();
+
+  toggleSelect(i: number, checked: boolean): void {
+    checked ? this.selection.add(i) : this.selection.delete(i);
+  }
+
+  copy(i: number): void {
+    const idxs = this.selection.size ? [...this.selection] : [i];
+    idxs.sort((a,b)=>a-b);
+    this.clipboard = idxs.map(idx => structuredClone(this.steps.at(idx).value));
+    this.selection.clear();
+  }
+
+  paste(afterIdx: number): void {
+    if (!this.clipboard.length) return;
+
+    this.clipboard.forEach((raw, ofs) => {
+      const fg = this.createStep();
+      fg.patchValue(raw);
+      this.steps.insert(afterIdx + 1 + ofs, fg);
+    });
+
+    this.clipboard = [];
+    this.cdr.detectChanges();
+  }
+
+  removeSelected(): void {
+    const idxs = [...this.selection].sort((a,b)=>b-a);
+    idxs.forEach(i => this.removeStep(i));
+    this.selection.clear();
+  }
+
+  scrollToStep(idx: number): void {
+    const el = document.getElementById(`step-${idx}`);
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  trackByIndex(_: number, __: unknown): number {
+    return _;
+  }
+
 }
