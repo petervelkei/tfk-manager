@@ -1,86 +1,85 @@
 <div class="layout">
-
   <button class="burger" [class.open]="isSidebarOpen" (click)="isSidebarOpen = !isSidebarOpen">
     <span></span>
   </button>
 
-    <nav class="sidebar" [class.open]="isSidebarOpen">
-      <ul>
-        <li *ngFor="let s of steps.controls; let i = index; trackBy: trackByIndex"
-            [class.active]="selection.has(i)">
-          <button type="button" (click)="scrollToStep(i)">
-            {{ i + 1 }}. lépés
+  <nav class="sidebar" [class.open]="isSidebarOpen">
+    <ul>
+      <li *ngFor="let s of steps.controls; let i = index; trackBy: trackByIndex"
+          [class.active]="selection.has(i)">
+        <button type="button" (click)="scrollToStep(i)">
+          {{ i + 1 }}. lépés
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>TFK</h2>
+
+    <form [formGroup]="testPlanForm">
+      <div class="form-group">
+        <label>Excel neve</label>
+        <input formControlName="title" type="text" placeholder="Pl.: Bejelentkezés" />
+      </div>
+
+      <div class="sheet-tabs">
+        <button
+          *ngFor="let s of sheets.controls; let si = index"
+          type="button"
+          class="tab"
+          [class.active]="si === activeSheetIndex"
+          (click)="switchSheet(si)">
+          {{ s.get('sheetName')?.value || ('Lap ' + (si+1)) }}
+        </button>
+
+        <button type="button" class="tab add" (click)="addSheet()">＋ Új lap</button>
+        <button type="button" class="tab danger" (click)="removeSheet(activeSheetIndex)" [disabled]="sheets.length <= 1">🗑 Lap törlése</button>
+      </div>
+
+      <div class="import-card">
+        <div class="import-card__header">
+          <div class="import-card__icon">📥</div>
+          <div>
+            <h3 class="import-card__title">Excel import</h3>
+            <p class="import-card__subtitle">Válaszd ki a fájlt és a munkalapot, majd importálj.</p>
+          </div>
+        </div>
+
+        <div class="import-card__body">
+          <div class="form-group">
+            <label>Importálás meglévő Excel fájlból</label>
+            <input type="file" accept=".xlsx,.xls" (change)="onFileSelected($event)"/>
+            <small class="hint">Elfogadott formátum: .xlsx, .xls</small>
+          </div>
+
+          <div class="form-group" *ngIf="sheetNames.length > 0">
+            <label>Munkalap kiválasztása</label>
+            <select [(ngModel)]="selectedSheetName" [ngModelOptions]="{standalone: true}">
+              <option *ngFor="let n of sheetNames" [value]="n">{{ n }}</option>
+            </select>
+          </div>
+
+          <div class="form-group" *ngIf="sheetNames.length > 0">
+            <label>Olvasás kezdete (sorszám)</label>
+            <input type="number" [ngModel]="startRow" (ngModelChange)="startRow = $event" [ngModelOptions]="{standalone: true}" min="1" />
+            <small class="hint">Default: 19</small>
+          </div>
+
+          <div class="form-group" *ngIf="sheetNames.length > 0">
+            <label>Olvasás vége (sorszám)</label>
+            <input type="number" [ngModel]="endRow" (ngModelChange)="endRow = $event" [ngModelOptions]="{standalone: true}" min="1" />
+            <small class="hint">Ha üres, a munkalap végéig olvas.</small>
+          </div>
+
+        </div>
+
+        <div class="import-card__footer" *ngIf="sheetNames.length > 0">
+          <button type="button" class="add-step" (click)="importFromSelectedSheet()">
+            Import
           </button>
-        </li>
-      </ul>
-    </nav>
-
-    <div class="container">
-      <h2>TFK</h2>
-
-      <form [formGroup]="testPlanForm">
-        <div class="form-group">
-          <label>Excel neve</label>
-          <input formControlName="title" type="text" placeholder="Pl.: Bejelentkezés" />
         </div>
-
-        <div class="sheet-tabs">
-          <button
-            *ngFor="let s of sheets.controls; let si = index"
-            type="button"
-            class="tab"
-            [class.active]="si === activeSheetIndex"
-            (click)="switchSheet(si)">
-            {{ s.get('sheetName')?.value || ('Lap ' + (si+1)) }}
-          </button>
-
-          <button type="button" class="tab add" (click)="addSheet()">＋ Új lap</button>
-          <button type="button" class="tab danger" (click)="removeSheet(activeSheetIndex)" [disabled]="sheets.length <= 1">🗑 Lap törlése</button>
-        </div>
-
-        <div class="import-card">
-          <div class="import-card__header">
-            <div class="import-card__icon">📥</div>
-            <div>
-              <h3 class="import-card__title">Excel import</h3>
-              <p class="import-card__subtitle">Válaszd ki a fájlt és a munkalapot, majd importálj.</p>
-            </div>
-          </div>
-
-          <div class="import-card__body">
-            <div class="form-group">
-              <label>Importálás meglévő Excel fájlból</label>
-              <input type="file" accept=".xlsx,.xls" (change)="onFileSelected($event)"/>
-              <small class="hint">Elfogadott formátum: .xlsx, .xls</small>
-            </div>
-
-            <div class="form-group" *ngIf="sheetNames.length > 0">
-              <label>Munkalap kiválasztása</label>
-              <select [(ngModel)]="selectedSheetName" [ngModelOptions]="{standalone: true}">
-                <option *ngFor="let n of sheetNames" [value]="n">{{ n }}</option>
-              </select>
-            </div>
-
-            <div class="form-group" *ngIf="sheetNames.length > 0">
-              <label>Olvasás kezdete (sorszám)</label>
-              <input type="number" [ngModel]="startRow" (ngModelChange)="startRow = $event" [ngModelOptions]="{standalone: true}" min="1" />
-              <small class="hint">Default: 19</small>
-            </div>
-
-            <div class="form-group" *ngIf="sheetNames.length > 0">
-              <label>Olvasás vége (sorszám)</label>
-              <input type="number" [ngModel]="endRow" (ngModelChange)="endRow = $event" [ngModelOptions]="{standalone: true}" min="1" />
-              <small class="hint">Ha üres, a munkalap végéig olvas.</small>
-            </div>
-
-          </div>
-
-          <div class="import-card__footer" *ngIf="sheetNames.length > 0">
-            <button type="button" class="add-step" (click)="importFromSelectedSheet()">
-              Import
-            </button>
-          </div>
-        </div>
+      </div>
 
       <div formArrayName="sheets">
         <div [formGroup]="activeSheetGroup">
@@ -164,9 +163,9 @@
       </div>
 
 
-        <div class="actions">
-          <button type="button" class="add-step" (click)="exportExcel()">Export Excel</button>
-        </div>
-      </form>
-    </div>
-    </div>
+      <div class="actions">
+        <button type="button" class="add-step" (click)="exportExcel()">Export Excel</button>
+      </div>
+    </form>
+  </div>
+</div>

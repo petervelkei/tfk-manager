@@ -250,37 +250,28 @@ export class TestPlan implements OnInit {
   }
 
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file  = input.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const data = new Uint8Array(reader.result as ArrayBuffer);
-        this.ngZone.run(() => {
-          this.workbook   = XLSX.read(data, { type: 'array' });
+    try {
+      const buffer = await file.arrayBuffer();
+      this.ngZone.run(() => {
+        this.workbook = XLSX.read(new Uint8Array(buffer), { type: 'array' });
+        this.sheetNames = [...this.workbook.SheetNames];
+        this.selectedSheetName = this.sheetNames[0] ?? null;
+      });
 
-          this.sheetNames = [...this.workbook.SheetNames];
-          this.selectedSheetName = this.sheetNames[0] ?? null;
+      await Promise.resolve();
+      this.importFromSelectedSheet();
 
-          if (this.sheetNames.length === 1) {
-            this.importFromSelectedSheet();
-          }
-
-          this.cdr.detectChanges();
-        });
-
-      } catch (e) {
-        console.error('Excel olvasási hiba:', e);
-      } finally {
-        input.value = '';
-      }
-    };
-
-    reader.onerror = err => console.error('FileReader hiba:', err);
-    reader.readAsArrayBuffer(file);
+    } catch (e) {
+      console.error('Excel olvasási hiba:', e);
+    } finally {
+      input.value = '';
+      this.cdr.markForCheck();
+    }
   }
   
   onSheetSelected(): void {
