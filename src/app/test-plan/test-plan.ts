@@ -30,6 +30,7 @@ export class TestPlan implements OnInit {
   ngOnInit(): void {
     this.testPlanForm = this.fb.group({
       title: ['', Validators.required],
+      sheetName: ['', Validators.required],
       steps: this.fb.array([ this.createStep() ])
     });
   }
@@ -75,9 +76,16 @@ export class TestPlan implements OnInit {
     }
   }
 
+
+  private sanitizeSheetName(raw: string, fallback = 'Tesztelési forgatókönyv'): string {
+    const invalid = /[\\/?*[\]:]/g;
+    let name = (raw ?? '').toString().trim().replace(invalid, ' ').slice(0, 31);
+    return name || fallback;
+  }
+
   exportExcel(): void {
     const wb = new Workbook();
-    const ws = wb.addWorksheet('Tesztforgatókönyv');
+    const ws = wb.addWorksheet(this.sanitizeSheetName(this.testPlanForm.value.sheetName) || 'Tesztelési forgatókönyv');
 
     const alignLeft: Partial<Alignment>   = { vertical: 'top',    horizontal: 'left',  wrapText: true };
     const alignCenter: Partial<Alignment> = { vertical: 'middle', horizontal: 'center', wrapText: true };

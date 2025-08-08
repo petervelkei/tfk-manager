@@ -20,8 +20,13 @@
 
       <form [formGroup]="testPlanForm">
         <div class="form-group">
-          <label>Teszt neve</label>
-          <input formControlName="title" type="text" placeholder="Pl.: Belépési folyamat" />
+          <label>Excel neve</label>
+          <input formControlName="title" type="text" placeholder="Pl.: Bejelentkezés" />
+        </div>
+        
+        <div class="form-group">
+          <label>Munkalap neve</label>
+          <input formControlName="sheetName" type="text" placeholder="Pl.: Páciens felvétele" />
         </div>
 
         <div class="import-card">
