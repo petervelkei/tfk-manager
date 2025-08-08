@@ -511,3 +511,18 @@ textarea {
     transition: margin .3s cubic-bezier(.4,.0,.2,1);
   }
 }
+
+
+.sheet-tabs {
+  display: flex; gap: 8px; margin: 12px 0 18px; flex-wrap: wrap;
+  .tab {
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    &.active { background: $primary-color; color: #fff; box-shadow: 0 4px 12px rgba($primary-color,.25); }
+    &.add { background: rgba($primary-color,.08); color: $primary-color; border-color: rgba($primary-color,.2); }
+    &.danger { background: rgba(231,76,60,.08); color: #e74c3c; border-color: rgba(231,76,60,.2); }
+  }
+}

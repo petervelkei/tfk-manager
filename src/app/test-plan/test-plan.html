@@ -23,10 +23,19 @@
           <label>Excel neve</label>
           <input formControlName="title" type="text" placeholder="Pl.: Bejelentkezés" />
         </div>
-        
-        <div class="form-group">
-          <label>Munkalap neve</label>
-          <input formControlName="sheetName" type="text" placeholder="Pl.: Páciens felvétele" />
+
+        <div class="sheet-tabs">
+          <button
+            *ngFor="let s of sheets.controls; let si = index"
+            type="button"
+            class="tab"
+            [class.active]="si === activeSheetIndex"
+            (click)="switchSheet(si)">
+            {{ s.get('sheetName')?.value || ('Lap ' + (si+1)) }}
+          </button>
+
+          <button type="button" class="tab add" (click)="addSheet()">＋ Új lap</button>
+          <button type="button" class="tab danger" (click)="removeSheet(activeSheetIndex)" [disabled]="sheets.length <= 1">🗑 Lap törlése</button>
         </div>
 
         <div class="import-card">
@@ -73,73 +82,87 @@
           </div>
         </div>
 
-        <div formArrayName="steps">
-          <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i" class="step-card" [attr.id]="'step-' + i"> 
-            <div class="step-header-row">
+      <div formArrayName="sheets">
+        <div [formGroup]="activeSheetGroup">
+          <div class="form-group">
+            <label>Munkalap neve</label>
+            <input formControlName="sheetName" type="text" placeholder="Pl.: Páciens felvétele" />
+          </div>
 
-              <input type="checkbox" [checked]="selection.has(i)" (change)="toggleSelect(i,$event.target.checked)" title="Kijelölés" class="row-checkbox" />
+          <div formArrayName="steps">
+            <div *ngFor="let step of steps.controls; let i = index" 
+                [formGroupName]="i" 
+                class="step-card" 
+                [attr.id]="'step-' + activeSheetIndex + '-' + i">
+              
 
-              <h3 class="step-title">{{ i + 1 }}. lépés</h3>
+              <div class="step-header-row">
+                <input type="checkbox" [checked]="selection.has(i)" (change)="toggleSelect(i,$event.target.checked)" title="Kijelölés" class="row-checkbox" />
 
-              <div class="mini-actions">
-                <button type="button" class="mini-btn" (click)="copy(i)"  title="Másolás"> 📋</button>
-                <button type="button" class="mini-btn" (click)="paste(i)" [disabled]="!clipboard.length" title="Beillesztés">📥</button>
+                <h3 class="step-title">{{ i + 1 }}. lépés</h3>
+
+                <div class="mini-actions">
+                  <button type="button" class="mini-btn" (click)="copy(i)"  title="Másolás"> 📋</button>
+                  <button type="button" class="mini-btn" (click)="paste(i)" [disabled]="!clipboard.length" title="Beillesztés">📥</button>
+                </div>
+
+                <label class="switch">
+                  <input type="checkbox" formControlName="isSubtest">
+                  <span class="slider"></span>
+                  <span class="switch-label">Alteszt címsor</span>
+                </label>
               </div>
 
-              <label class="switch">
-                <input type="checkbox" formControlName="isSubtest">
-                <span class="slider"></span>
-                <span class="switch-label">Alteszt címsor</span>
-              </label>
-            </div>
+              <div class="form-group" *ngIf="step.get('isSubtest')?.value; else normalRow">
+                <label>Alteszt neve</label>
+                <input formControlName="subtestName" type="text"
+                      placeholder="Pl.: Közgyógyellátás szerkesztés - alteszt blokk" />
 
-            <div class="form-group" *ngIf="step.get('isSubtest')?.value; else normalRow">
-              <label>Alteszt neve</label>
-              <input formControlName="subtestName" type="text"
-                    placeholder="Pl.: Közgyógyellátás szerkesztés - alteszt blokk" />
-
-              <div class="form-group" style="margin-top: 12px;">
-                <label>Alteszt háttérszíne</label>
-                <input formControlName="subtestColor" type="color" style="width: 56px; height: 32px; padding: 0; border: none;" />
-                <small class="hint" style="margin-left:8px;">Default: gray (#929292)</small>
-              </div>
-            </div>
-
-            <ng-template #normalRow>
-              <div class="form-group">
-                <label>Funkció</label>
-                <input formControlName="function" type="text" />
+                <div class="form-group" style="margin-top: 12px;">
+                  <label>Alteszt háttérszíne</label>
+                  <input formControlName="subtestColor" type="color" style="width: 56px; height: 32px; padding: 0; border: none;" />
+                  <small class="hint" style="margin-left:8px;">Default: gray (#929292)</small>
+                </div>
               </div>
 
-              <div class="form-group">
-                <label>Előfeltétel</label>
-                <textarea formControlName="precondition" rows="6" placeholder="Írd le az előfeltételeket"></textarea>
-              </div>
+              <ng-template #normalRow>
+                <div class="form-group">
+                  <label>Funkció</label>
+                  <input formControlName="function" type="text" />
+                </div>
 
-              <div class="form-group">
-                <label>Feladat/Tesztlépések</label>
-                <textarea formControlName="stepsText" rows="6" placeholder="Írd le a lépéseket, listázva"></textarea>
-              </div>
-              <div class="form-group">
-                <label>Tesztadatok</label>
-                <textarea formControlName="testData" rows="6" placeholder="Írd le a tesztadatokat"></textarea>
-              </div>
-              <div class="form-group">
-                <label>Elvárt eredmény</label>
-                <textarea formControlName="expected" rows="6" placeholder="Írd le az elvárt kimenetet"></textarea>
-              </div>
-              <div class="form-group">
-                <label>Megjegyzés</label>
-                <textarea formControlName="comment" rows="6" placeholder="Írd le a megjegyzéseket"></textarea>
-              </div>
-            </ng-template>
+                <div class="form-group">
+                  <label>Előfeltétel</label>
+                  <textarea formControlName="precondition" rows="6" placeholder="Írd le az előfeltételeket"></textarea>
+                </div>
 
-            <div class="actions">
-              <button type="button" class="add-step" (click)="addStep(i)">Új lépés hozzáadása</button>
-              <button type="button" class="remove-step" (click)="removeStep(i)" [disabled]="steps.length === 1">Sor törlése</button>
+                <div class="form-group">
+                  <label>Feladat/Tesztlépések</label>
+                  <textarea formControlName="stepsText" rows="6" placeholder="Írd le a lépéseket, listázva"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Tesztadatok</label>
+                  <textarea formControlName="testData" rows="6" placeholder="Írd le a tesztadatokat"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Elvárt eredmény</label>
+                  <textarea formControlName="expected" rows="6" placeholder="Írd le az elvárt kimenetet"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Megjegyzés</label>
+                  <textarea formControlName="comment" rows="6" placeholder="Írd le a megjegyzéseket"></textarea>
+                </div>
+              </ng-template>
+
+              <div class="actions">
+                <button type="button" class="add-step" (click)="addStep(i)">Új lépés hozzáadása</button>
+                <button type="button" class="remove-step" (click)="removeStep(i)" [disabled]="steps.length === 1">Sor törlése</button>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
 
         <div class="actions">
           <button type="button" class="add-step" (click)="exportExcel()">Export Excel</button>
