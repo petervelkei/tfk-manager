@@ -1,0 +1,40 @@
+<div class="import-card">
+  <div class="import-card__header">
+    <div class="import-card__icon">📥</div>
+    <div>
+      <h3 class="import-card__title">Excel import</h3>
+      <p class="import-card__subtitle">Válaszd ki a fájlt és a munkalapot, majd importálj.</p>
+    </div>
+  </div>
+
+  <div class="import-card__body">
+    <div class="form-group">
+      <label>Importálás meglévő Excel fájlból</label>
+      <input type="file" accept=".xlsx,.xls" (change)="onFileInput($event)"/>
+      <small class="hint">Elfogadott formátum: .xlsx, .xls</small>
+    </div>
+
+    <div class="form-group" *ngIf="sheetNames.length > 0">
+      <label>Munkalap kiválasztása</label>
+      <select [(ngModel)]="selectedSheetName" (ngModelChange)="sheetChange.emit($event)">
+        <option *ngFor="let n of sheetNames" [value]="n">{{ n }}</option>
+      </select>
+    </div>
+
+    <div class="form-group" *ngIf="sheetNames.length > 0">
+      <label>Olvasás kezdete (sorszám)</label>
+      <input type="number" [ngModel]="startRow" (ngModelChange)="startRowChange.emit($event)" min="1" />
+      <small class="hint">Default: 19</small>
+    </div>
+
+    <div class="form-group" *ngIf="sheetNames.length > 0">
+      <label>Olvasás vége (sorszám)</label>
+      <input type="number" [ngModel]="endRow" (ngModelChange)="endRowChange.emit($event)" min="1" />
+      <small class="hint">Ha üres, a munkalap végéig olvas.</small>
+    </div>
+  </div>
+
+  <div class="import-card__footer" *ngIf="sheetNames.length > 0">
+    <button type="button" class="add-step" (click)="importClick.emit()">Import</button>
+  </div>
+</div>

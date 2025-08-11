@@ -1,0 +1,160 @@
+@use '../../../styles/tokens' as *;
+
+.import-card {
+  background: $accent-color;
+  border-radius: $border-radius;
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.06);
+  overflow: hidden;
+  margin: $spacing * 1.5 0;
+
+  &__header {
+    display: flex; align-items: center; gap: $spacing;
+    padding: $spacing * 1.25 $spacing * 1.5;
+    background: linear-gradient(135deg, rgba(75,108,183,.08), rgba(24,40,72,.06));
+    border-bottom: 1px solid rgba(0,0,0,.05);
+  }
+  &__icon {
+    font-size: 1.75rem; line-height: 1; width: 44px; height: 44px;
+    display: grid; place-items: center; background: #fff; border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.08); color: $primary-color;
+  }
+  &__title { margin: 0; color: $secondary-color; font-size: 1.25rem; font-weight: 700; }
+  &__subtitle { margin: 2px 0 0; color: darken($text-color, 10%); font-size: .95rem; opacity: .85; }
+
+  &__body { padding: $spacing * 1.5; }
+  &__footer {
+    display: flex; justify-content: flex-end; gap: $spacing;
+    padding: $spacing $spacing * 1.5 $spacing * 1.25;
+    background: rgba(0,0,0,.02); border-top: 1px solid rgba(0,0,0,.05);
+    .add-step { min-width: 140px; }
+  }
+}
+
+input[type="number"] { max-width: 250px; }
+input[type="file"] { max-width: 400px; }
+.import-card .form-group { max-width: 425px; }
+
+
+.import-card .form-group { margin-bottom: $spacing; }
+.import-card label { display: inline-block; font-weight: 600; margin-bottom: $spacing / 4; color: $text-color; }
+.import-card input[type="file"],
+.import-card input[type="number"],
+.import-card select {
+  width: 100%; padding: $spacing / 1.4;
+  border: 1px solid lighten($text-color, 50%);
+  border-radius: 10px; background: #fff; font-size: 1rem;
+  transition: border-color .2s ease, box-shadow .2s ease;
+  &:focus { outline: none; border-color: $primary-color; box-shadow: 0 0 0 3px rgba(75,108,183,.18); }
+}
+.import-card input[type="file"] { padding: $spacing / 2; }
+
+.import-card .hint { display: block; font-size: .85rem; color: darken($text-color, 15%); opacity: .8; margin-top: 6px; }
+
+
+
+
+@media (max-width: 1024px) {
+  .import-card {
+    margin: $spacing 0;
+  }
+  .import-card__header {
+    gap: $spacing * .75;
+    padding: $spacing $spacing * 1.25;
+  }
+  .import-card__body {
+    padding: $spacing * 1.25;
+  }
+
+  .import-card .form-group {
+    max-width: 100%;
+  }
+
+  input[type="file"] {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .import-card__header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: $spacing * .6;
+  }
+
+  .import-card__icon {
+    width: 40px; height: 40px;
+  }
+
+  .import-card__title {
+    font-size: 1.15rem;
+  }
+  .import-card__subtitle {
+    font-size: .9rem;
+  }
+
+  .import-card__body {
+    padding: $spacing;
+  }
+
+  .import-card__footer {
+    justify-content: center;
+    padding: $spacing;
+    gap: $spacing * .75;
+
+    .add-step {
+      min-width: 180px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .import-card {
+    border-radius: $border-radius * .8;
+    box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    margin: $spacing * .75 0;
+  }
+
+  .import-card__header {
+    padding: $spacing * .9;
+  }
+
+  .import-card__icon {
+    width: 36px; height: 36px;
+    font-size: 1.4rem;
+  }
+
+  .import-card__title {
+    font-size: 1.05rem;
+  }
+  .import-card__subtitle {
+    font-size: .85rem;
+  }
+
+  .import-card__body {
+    padding: $spacing * .9;
+  }
+
+  .import-card .form-group,
+  .import-card input[type="file"],
+  .import-card input[type="number"],
+  .import-card select {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .import-card__footer {
+    padding: $spacing * .8;
+    .add-step {
+      min-width: 100%;
+      padding: $spacing * .8;
+      border-radius: $border-radius;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .import-card__icon { width: 32px; height: 32px; }
+  .import-card__title { font-size: 1rem; }
+}

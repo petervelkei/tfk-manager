@@ -1,0 +1,10 @@
+<div class="sheet-tabs">
+  <button *ngFor="let s of sheets.controls; let si = index"
+          type="button" class="tab"
+          [class.active]="si === activeIndex"
+          (click)="switch.emit(si)">
+    {{ s.get('sheetName')?.value || ('Lap ' + (si+1)) }}
+  </button>
+  <button type="button" class="tab add" (click)="add.emit()">＋ Új lap</button>
+  <button type="button" class="tab danger" (click)="remove.emit(activeIndex)" [disabled]="sheets.length <= 1">🗑 Lap törlése</button>
+</div>

@@ -1,0 +1,63 @@
+<div class="step-card" [attr.id]="'step-' + activeSheetIndex + '-' + index" [formGroup]="group">
+  <div class="step-header-row">
+    <input type="checkbox" [checked]="selected" (change)="toggleSelect.emit($event.target.checked)" title="Kijelölés" class="row-checkbox" />
+
+    <h3 class="step-title">{{ index + 1 }}. lépés</h3>
+
+    <div class="mini-actions">
+      <button type="button" class="mini-btn" (click)="copy.emit()"  title="Másolás"> 📋</button>
+      <button type="button" class="mini-btn" (click)="paste.emit()" [disabled]="!clipboardHasContent" title="Beillesztés">📥</button>
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" formControlName="isSubtest">
+      <span class="slider"></span>
+      <span class="switch-label">Alteszt címsor</span>
+    </label>
+  </div>
+
+  <div class="form-group" *ngIf="isSubtest; else normalRow">
+    <label>Alteszt neve</label>
+    <input formControlName="subtestName" type="text" placeholder="Pl.: Közgyógyellátás szerkesztés - alteszt blokk" />
+
+    <div class="form-group" style="margin-top: 12px;">
+      <label>Alteszt háttérszíne</label>
+      <input formControlName="subtestColor" type="color" style="width: 56px; height: 32px; padding: 0; border: none;" />
+      <small class="hint" style="margin-left:8px;">Default: gray (#929292)</small>
+    </div>
+  </div>
+
+  <ng-template #normalRow>
+    <div class="form-group">
+      <label>Funkció</label>
+      <input formControlName="function" type="text" />
+    </div>
+
+    <div class="form-group">
+      <label>Előfeltétel</label>
+      <textarea formControlName="precondition" rows="6" placeholder="Írd le az előfeltételeket"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Feladat/Tesztlépések</label>
+      <textarea formControlName="stepsText" rows="6" placeholder="Írd le a lépéseket, listázva"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Tesztadatok</label>
+      <textarea formControlName="testData" rows="6" placeholder="Írd le a tesztadatokat"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Elvárt eredmény</label>
+      <textarea formControlName="expected" rows="6" placeholder="Írd le az elvárt kimenetet"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Megjegyzés</label>
+      <textarea formControlName="comment" rows="6" placeholder="Írd le a megjegyzéseket"></textarea>
+    </div>
+  </ng-template>
+
+  <div class="actions">
+    <button type="button" class="add-step" (click)="addAfter.emit()">Új lépés hozzáadása</button>
+    <button type="button" class="remove-step" (click)="remove.emit()">Sor törlése</button>
+  </div>
+</div>

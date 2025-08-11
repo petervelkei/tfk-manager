@@ -1,0 +1,70 @@
+<div class="layout">
+  <tp-sidebar
+    [open]="isSidebarOpen"
+    [stepsCount]="steps.length"
+    [selectedIndices]="selection"
+    [activeSheetIndex]="activeSheetIndex"
+    (toggleOpen)="isSidebarOpen = !isSidebarOpen"
+    (scrollTo)="scrollToStep($event)">
+  </tp-sidebar>
+
+  <div class="container">
+    <h2>TFK</h2>
+
+    <form [formGroup]="testPlanForm">
+      <div class="form-group">
+        <label>Excel neve</label>
+        <input formControlName="title" type="text" placeholder="Pl.: Bejelentkezés" />
+      </div>
+
+      <tp-sheet-tabs
+        [sheets]="sheets"
+        [activeIndex]="activeSheetIndex"
+        (switch)="switchSheet($event)"
+        (add)="addSheet()"
+        (remove)="removeSheet($event)">
+      </tp-sheet-tabs>
+
+      <tp-import-card
+        [sheetNames]="sheetNames"
+        [selectedSheetName]="selectedSheetName"
+        [startRow]="startRow"
+        [endRow]="endRow"
+        (fileSelected)="onFileSelected($event)"
+        (sheetChange)="onSheetSelected($event)"
+        (startRowChange)="startRow = $event"
+        (endRowChange)="endRow = $event"
+        (importClick)="importFromSelectedSheet()"></tp-import-card>
+
+      <div formArrayName="sheets">
+        <div [formGroup]="activeSheetGroup">
+          <div class="form-group">
+            <label>Munkalap neve</label>
+            <input formControlName="sheetName" type="text" placeholder="Pl.: Páciens felvétele" />
+          </div>
+
+          <div formArrayName="steps">
+            <ng-container *ngFor="let step of steps; let i = index">
+              <tp-step-card
+                [group]="$any(step)"
+                [index]="i"
+                [activeSheetIndex]="activeSheetIndex"
+                [selected]="selection.has(i)"
+                [clipboardHasContent]="!!clipboard.length"
+                (toggleSelect)="toggleSelect(i, $event)"
+                (copy)="copy(i)"
+                (paste)="paste(i)"
+                (addAfter)="addStep(i)"
+                (remove)="removeStep(i)">
+              </tp-step-card>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="add-step export-excel" (click)="exportExcel()">Export Excel</button>
+      </div>
+    </form>
+  </div>
+</div>

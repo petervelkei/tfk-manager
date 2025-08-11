@@ -1,0 +1,143 @@
+@use '../styles/tokens' as *;
+
+:host {
+  display: flex;
+  justify-content: center;
+  padding: $spacing * 1.5;
+  background-color: $bg-color;
+}
+
+.layout {
+  display: flex;
+  gap: $spacing * 1.5;
+}
+
+.container {
+  background: $accent-color;
+  padding: $spacing * 2;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  width: 100%;
+  min-width: 900px;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+h2 {
+  color: $secondary-color;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: $spacing * 1.5;
+}
+
+.form-group {
+  input, select { width: 100%; box-sizing: border-box; }
+}
+
+label { font-weight: 600; margin-bottom: $spacing / 3; color: $text-color; }
+input[type="text"] {
+  padding: $spacing / 1.5;
+  border: 1px solid lighten($text-color, 50%);
+  border-radius: $border-radius;
+  font-size: 1.1rem;
+  color: $text-color;
+  transition: border-color 0.2s ease-in-out;
+  &:focus { outline: none; border-color: $primary-color; box-shadow: 0 0 0 3px rgba(75,108,183,.2); }
+}
+textarea {
+  padding: $spacing / 1.5;
+  border: 1px solid lighten($text-color, 50%);
+  border-radius: $border-radius;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  min-height: 140px;
+  resize: vertical;
+  transition: border-color 0.2s ease-in-out;
+  &:focus { outline: none; border-color: $primary-color; box-shadow: 0 0 0 3px rgba(75,108,183,.2); }
+}
+
+.actions {
+  display: flex; flex-wrap: wrap; gap: $spacing;
+  margin-top: $spacing * 1.5; justify-content: center; align-items: center;
+  button:not(.export-excel) { order: 1; }
+}
+button {
+  padding: $spacing / 1.2 $spacing;
+  font-size: 1.1rem; border: none; border-radius: $border-radius; cursor: pointer;
+  transition: background-color .2s ease;
+  &.add-step { background-color: $primary-color; color: $accent-color;
+    &:hover { background-color: darken($primary-color, 5%); }
+  }
+  &.remove-step { background: transparent; color: #e74c3c; padding: $spacing / 1.5 $spacing;
+    &:hover { background: rgba(231,76,60, .15); }
+  }
+}
+
+@media (max-width: 1200px) {
+  :host { padding: $spacing * 1.2; }
+  .layout { gap: $spacing * 1.2; }
+  .container { padding: $spacing * 1.6; }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    width: clamp(280px, 94vw, 1000px);
+    padding: $spacing * 1.4;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    gap: $spacing;
+  }
+
+  :host { padding: $spacing; }
+  .container {
+    width: min(100%, 720px);
+    padding: $spacing * 1.2;
+    border-radius: $border-radius;
+  }
+
+  h2 { margin-bottom: $spacing; }
+
+  .actions {
+    gap: $spacing * .9;
+  }
+  button {
+    font-size: 1rem;
+    padding: $spacing * .6 $spacing;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 100%;
+    padding: $spacing;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing * 1.1;
+  }
+  button.export-excel {
+    flex: none;
+    margin-top: $spacing * .6;
+    width: 100%;
+    padding: $spacing * .8;
+  }
+}
+
+@media (max-width: 380px) {
+  :host { padding: $spacing * .75; }
+  .container { padding: $spacing * .9; }
+  button { font-size: .95rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

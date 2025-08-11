@@ -1,0 +1,63 @@
+@use '../../../styles/tokens' as *;
+
+.burger {
+  display: none;
+  position: fixed;
+  top: 18px; left: 18px;
+  z-index: 1200;
+  width: 42px; height: 42px;
+  border: none; border-radius: 50%;
+  background: $primary-color;
+  box-shadow: 0 4px 16px rgba($primary-color,.3);
+  cursor: pointer; transition: transform .25s;
+  &:hover { transform: scale(1.06); }
+  &:active { transform: scale(0.94); }
+  &::before, &::after, span {
+    content: ''; display: block; width: 22px; height: 2.8px; margin: 0 auto;
+    background: #fff; border-radius: 2px; transition: transform .25s, opacity .2s;
+  }
+  span { margin: 6px auto; }
+  &.open::before { transform: translateY(8.8px) rotate(45deg); }
+  &.open::after  { transform: translateY(-8.8px) rotate(-45deg); }
+  &.open span    { opacity: 0; }
+}
+
+.sidebar {
+  width: clamp(160px, 18vw, 220px);
+  max-height: 92vh;
+  background: linear-gradient(135deg, rgba(75,108,183,.08), rgba(24,40,72,.06));
+  border-radius: $border-radius * 1.2;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.04);
+  position: sticky; top: $spacing * 1.25;
+  padding: $spacing * .8 $spacing * .9;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba($primary-color, .25) transparent;
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb { background: rgba($primary-color,.25); border-radius: 10px; &:hover { background: rgba($primary-color,.35); } }
+
+  ul { margin:0; padding: 0 20px 0 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  li button {
+    all: unset; width: 100%; padding: 9px 12px; border-radius: 10px; color: $secondary-color;
+    cursor: pointer; transition: background .15s ease, color .15s ease, transform .12s ease;
+    &:hover { background: rgba($primary-color,.10); transform: translateX(2px); }
+    &:active { transform: translateX(4px); }
+  }
+  li.active button {
+    background: $primary-color; color: #fff; box-shadow: 0 4px 14px rgba($primary-color,.28);
+    &:hover { background: darken($primary-color, 6%); }
+  }
+}
+
+@media (max-width: 767px) {
+  .burger { display: block; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh;
+    width: clamp(260px, 80vw, 320px);
+    transform: translateX(-100%);
+    transition: transform .3s cubic-bezier(.4,.0,.2,1), box-shadow .3s;
+    &.open { transform: translateX(0); box-shadow: 4px 0 18px rgba(0,0,0,.18); }
+    padding: $spacing * 1.2;
+  }
+}

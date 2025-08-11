@@ -1,0 +1,12 @@
+<button class="burger" [class.open]="open" (click)="toggleOpen.emit()">
+  <span></span>
+</button>
+
+<nav class="sidebar" [class.open]="open">
+  <ul>
+    <li *ngFor="let _ of [].constructor(stepsCount); let i = index; trackBy: trackByIndex"
+        [class.active]="selectedIndices.has(i)">
+      <button type="button" (click)="scrollTo.emit(i)">{{ i + 1 }}. lépés</button>
+    </li>
+  </ul>
+</nav>

@@ -1,12 +1,12 @@
 import { Component, signal } from '@angular/core';
-import { TestPlan } from './test-plan/test-plan';
+import { TestPlanComponent } from './test-plan/test-plan.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TestPlan],
+  imports: [TestPlanComponent],
   templateUrl: './app.html',
-  styleUrls: ['./app.scss']
+  styleUrls: ['./app.scss'] 
 })
 export class App {
   protected readonly title = signal('tfk-manager');
